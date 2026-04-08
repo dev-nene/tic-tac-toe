@@ -130,7 +130,7 @@ function gameController(Player1 = "Name1", Player2 = "Name2") {
 
   const resetGame = () => {
     const b = board.getBoard();
-    
+
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         b[i][j].setValue(null);
@@ -236,19 +236,19 @@ function loadPlayers(onSave) {
   const closeBtn = document.querySelector(".closeBtn");
   const saveBtn = document.querySelector(".saveBtn");
 
-
   dialogEl.showModal();
 
   closeBtn.addEventListener("click", () => {
     dialogEl.close();
+    onSave("Player1", "Player2")
   });
 
   saveBtn.addEventListener("click", (e) => {
     e.preventDefault();
 
-    const p1 = player1.value;
+    const p1 = player1.value || "Player1";
     player1.value = "";
-    const p2 = player2.value;
+    const p2 = player2.value || "Player2";
     player2.value = "";
 
     dialogEl.close();
@@ -261,6 +261,5 @@ function startGame  () {
     ScreenController(p1, p2)
   })
 }
-
 
 startGame();
