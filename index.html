@@ -10,7 +10,26 @@
   <div class="container">
       <h1 class="turn"></h1>
       <div class="board"></div>
+
+      <button class="start">START / RESET</button>
   </div>
+
+  <dialog class="dialog" closedby="any">
+    <form action="dialog">
+      <div>
+        <label for="player1">Player 1 name:</label>
+        <input type="text" name="player1" id="player1">
+      </div>
+
+      <div>
+        <label for="player2">Player 2 name:</label>
+        <input type="text" name="player2" id="player2">
+      </div>
+
+      <button class="closeBtn" type="button">Close</button>
+      <button class="saveBtn" type="submit">Save</button>
+    </form>
+  </dialog>
   <script src="index.js"></script>
 </body>
 </html>

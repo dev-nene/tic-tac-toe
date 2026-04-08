@@ -128,6 +128,18 @@ function gameController(Player1 = "Name1", Player2 = "Name2") {
     if (k === 9) return "Tie";
   };
 
+  const resetGame = () => {
+    const b = board.getBoard();
+    
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        b[i][j].setValue(null);
+      }
+    }
+
+    activePlayer = players[0];
+  }
+
   const playRound = (x, y) => {
     const movePlayer = board.playTurn(x, y, activePlayer);
     if (!movePlayer) {
@@ -146,13 +158,16 @@ function gameController(Player1 = "Name1", Player2 = "Name2") {
     playRound,
     getActivePlayer,
     getBoard: board.getBoard,
+    resetGame,
   };
 }
 
-function ScreenController() {
-  const game = gameController();
+function ScreenController(p1, p2) {
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
+  const startButton = document.querySelector(".start");
+
+  let game = gameController(p1, p2);
 
   const drawBoard = () => {
     boardDiv.textContent = "";
@@ -185,6 +200,7 @@ function ScreenController() {
     const x = Number(e.target.dataset.x);
     const y = Number(e.target.dataset.y);
     if (x === undefined || y === undefined) return;
+
     const outcome = game.playRound(x, y);
     if (outcome) {
       if (outcome === "Tie") {
@@ -193,6 +209,8 @@ function ScreenController() {
       } else if (outcome === "X" || outcome === "O") {
         playerTurnDiv.textContent = `${game.getActivePlayer().name} wins with ${outcome}`;
         boardDiv.classList.add("disabled");
+      } else {
+        playerTurnDiv.textContent = outcome;
       }
       drawBoard();
       return; /* END GAME */
@@ -202,7 +220,47 @@ function ScreenController() {
 
   boardDiv.addEventListener("click", placeSign);
 
+  startButton.addEventListener("click", () => {
+    game.resetGame();
+    boardDiv.classList.remove("disabled");
+    updateScreen();
+  })
+
   updateScreen();
 }
 
-ScreenController();
+function loadPlayers(onSave) {
+  const dialogEl = document.querySelector("dialog");
+  const player1 = document.querySelector("#player1");
+  const player2 = document.querySelector("#player2");
+  const closeBtn = document.querySelector(".closeBtn");
+  const saveBtn = document.querySelector(".saveBtn");
+
+
+  dialogEl.showModal();
+
+  closeBtn.addEventListener("click", () => {
+    dialogEl.close();
+  });
+
+  saveBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const p1 = player1.value;
+    player1.value = "";
+    const p2 = player2.value;
+    player2.value = "";
+
+    dialogEl.close();
+    onSave(p1,p2);
+  });
+}
+
+function startGame  () {
+  loadPlayers((p1, p2) => {
+    ScreenController(p1, p2)
+  })
+}
+
+
+startGame();
