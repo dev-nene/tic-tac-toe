@@ -7,3 +7,48 @@
 body {
   background-color: #333;
 }
+
+
+h1 {
+  color: #fff;
+  font-size: 3rem;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  padding-top: 24px;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.board.disabled {
+  background-color: red;
+  pointer-events: none;
+}
+
+.board > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.cell {
+  background-color: #fff;
+  border: none;
+  font-size: 3rem;
+  padding: 2rem;
+  cursor: pointer;
+  width: 120px;
+  height: 120px;
+}

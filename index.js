@@ -12,19 +12,6 @@ function Gameboard() {
 
   const getBoard = () => board;
 
-  const printBoard = () => {
-    for (let i = 0; i < rows; i++) {
-      let res = "";
-      for (let j = 0; j < columns; j++) {
-        res += board[i][j].getValue();
-        res += " ";
-      }
-      console.log(res);
-      if (i === rows - 1) return;
-      console.log("\n");
-    }
-  };
-
   const playTurn = (x, y, player) => {
     if (board[x][y].getValue() !== null) return false;
 
@@ -34,7 +21,6 @@ function Gameboard() {
 
   return {
     getBoard,
-    printBoard,
     playTurn,
   };
 }
@@ -53,7 +39,7 @@ function Cell() {
 
 function gameController(Player1 = "Name1", Player2 = "Name2") {
   const board = Gameboard();
-  
+
   const players = [
     {
       name: Player1,
@@ -72,11 +58,6 @@ function gameController(Player1 = "Name1", Player2 = "Name2") {
   const switchActivePlayer = () =>
     (activePlayer = activePlayer === players[0] ? players[1] : players[0]);
 
-  const printNewRound = () => {
-    console.log(`${activePlayer.name} turns...`);
-    board.printBoard();
-  };
-
   const checkWin = () => {
     const b = board.getBoard();
     const boardVal = [];
@@ -85,60 +66,143 @@ function gameController(Player1 = "Name1", Player2 = "Name2") {
       boardVal[i] = [];
       for (let j = 0; j < 3; j++) {
         boardVal[i].push(b[i][j].getValue());
-        if(boardVal[i][j] !== null) k++;
+        if (boardVal[i][j] !== null) k++;
       }
     }
 
     /* DIAGONAL */
-    if (boardVal[0][0] && boardVal[0][0] === boardVal[1][1] && boardVal[0][0] === boardVal[2][2]) return boardVal[0][0]
+    if (
+      boardVal[0][0] &&
+      boardVal[0][0] === boardVal[1][1] &&
+      boardVal[0][0] === boardVal[2][2]
+    )
+      return boardVal[0][0];
+    if (
+      boardVal[0][2] &&
+      boardVal[0][2] === boardVal[1][1] &&
+      boardVal[0][2] === boardVal[2][0]
+    )
+      return boardVal[0][2];
 
-    if (boardVal[0][2] && boardVal[0][2] === boardVal[1][1] && boardVal[0][2] === boardVal[2][0]) return boardVal[0][2]
-        
     /* HORIZONTAL */
-    if (boardVal[0][0] && boardVal[0][0] === boardVal[0][1] && boardVal[0][0] === boardVal[0][2]) return boardVal[0][0] 
-
-    if (boardVal[1][0] && boardVal[1][0] === boardVal[1][1] && boardVal[1][0] === boardVal[1][2]) return boardVal[1][0]
-    
-    if (boardVal[2][0] && boardVal[2][0] === boardVal[2][1] && boardVal[2][0] === boardVal[2][2]) return boardVal[2][0]
+    if (
+      boardVal[0][0] &&
+      boardVal[0][0] === boardVal[0][1] &&
+      boardVal[0][0] === boardVal[0][2]
+    )
+      return boardVal[0][0];
+    if (
+      boardVal[1][0] &&
+      boardVal[1][0] === boardVal[1][1] &&
+      boardVal[1][0] === boardVal[1][2]
+    )
+      return boardVal[1][0];
+    if (
+      boardVal[2][0] &&
+      boardVal[2][0] === boardVal[2][1] &&
+      boardVal[2][0] === boardVal[2][2]
+    )
+      return boardVal[2][0];
 
     /* VERTICAL */
-    if (boardVal[0][0] && boardVal[0][0] === boardVal[1][0] && boardVal[0][0] === boardVal[2][0]) return boardVal[0][0]
-
-    if (boardVal[0][1] && boardVal[0][1] === boardVal[1][1] && boardVal[0][1] === boardVal[2][1]) return boardVal[0][1]
-
-
-    if (boardVal[0][2] && boardVal[0][2] === boardVal[1][2] && boardVal[0][2] === boardVal[2][2]) return boardVal[0][2]
+    if (
+      boardVal[0][0] &&
+      boardVal[0][0] === boardVal[1][0] &&
+      boardVal[0][0] === boardVal[2][0]
+    )
+      return boardVal[0][0];
+    if (
+      boardVal[0][1] &&
+      boardVal[0][1] === boardVal[1][1] &&
+      boardVal[0][1] === boardVal[2][1]
+    )
+      return boardVal[0][1];
+    if (
+      boardVal[0][2] &&
+      boardVal[0][2] === boardVal[1][2] &&
+      boardVal[0][2] === boardVal[2][2]
+    )
+      return boardVal[0][2];
 
     /* TIE */
-    if (k === 9) return "Tie"
-  }
+    if (k === 9) return "Tie";
+  };
 
   const playRound = (x, y) => {
     const movePlayer = board.playTurn(x, y, activePlayer);
-    if(!movePlayer) {
-      console.log("Invalid move, try again!")
-      printNewRound();
-      return;
-    };
+    if (!movePlayer) {
+      return "Invalid move, try again!";
+    }
 
     let win = checkWin();
-    if(win) {
-      console.log(win)
-      board.printBoard();
-      /* RESET GAME ? START */
-      return;
+    if (win) {
+      return win;
     }
 
     switchActivePlayer();
-    printNewRound();
   };
-
-  printNewRound();
 
   return {
     playRound,
     getActivePlayer,
+    getBoard: board.getBoard,
   };
 }
 
-const game = gameController();
+function ScreenController() {
+  const game = gameController();
+  const playerTurnDiv = document.querySelector(".turn");
+  const boardDiv = document.querySelector(".board");
+
+  const drawBoard = () => {
+    boardDiv.textContent = "";
+
+    const board = game.getBoard();
+
+    board.forEach((row, x) => {
+      const cellRow = document.createElement("div");
+      row.forEach((cell, y) => {
+        const cellItem = document.createElement("button");
+        cellItem.textContent = cell.getValue();
+        cellItem.classList.add("cell");
+        cellItem.dataset.x = x;
+        cellItem.dataset.y = y;
+        cellRow.appendChild(cellItem);
+      });
+      boardDiv.appendChild(cellRow);
+    });
+  };
+
+  const updateScreen = () => {
+    const activePlayer = game.getActivePlayer();
+
+    playerTurnDiv.textContent = `Player ${activePlayer.name}'s turn...`;
+
+    drawBoard();
+  };
+
+  const placeSign = (e) => {
+    const x = Number(e.target.dataset.x);
+    const y = Number(e.target.dataset.y);
+    if (x === undefined || y === undefined) return;
+    const outcome = game.playRound(x, y);
+    if (outcome) {
+      if (outcome === "Tie") {
+        playerTurnDiv.textContent = `It's a Tie`;
+        boardDiv.classList.add("disabled");
+      } else if (outcome === "X" || outcome === "O") {
+        playerTurnDiv.textContent = `${game.getActivePlayer().name} wins with ${outcome}`;
+        boardDiv.classList.add("disabled");
+      }
+      drawBoard();
+      return; /* END GAME */
+    }
+    updateScreen();
+  };
+
+  boardDiv.addEventListener("click", placeSign);
+
+  updateScreen();
+}
+
+ScreenController();
